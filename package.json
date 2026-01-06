@@ -2,6 +2,7 @@
   "name": "facilitator",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "x402 Protocol Facilitator API for Cronos Network",
   "scripts": {
     "build": "tsc",

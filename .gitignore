@@ -1,0 +1,15 @@
+/.env
+/node_modules
+/dist
+/build
+/coverage
+/logs
+/temp
+/test-results
+/test-reports
+/test-coverage
+/test-logs
+/test-reports
+/test-coverage
+/test-logs
+claude.md

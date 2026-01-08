@@ -84,11 +84,42 @@ export interface VerifyResponse {
   paymentToken?: PaymentToken;
 }
 
+export interface TronVerifyResponse {
+  isValid: boolean;
+  invalidReason?: string;
+  payer?: string;
+  paymentToken?: TronPaymentToken;
+}
+
+// EVM Payment Token (Cronos)
 export interface PaymentToken {
   scheme: string;
   network: string;
   payload: EIP3009Payload;
   signature: PaymentSignature;
+}
+
+// TRON Payment Token
+export interface TronPaymentToken {
+  scheme: string;
+  network: string;
+  payload: TronTransferPayload;
+  signature: TronSignature;
+}
+
+// TRON-specific types
+export interface TronTransferPayload {
+  from: string;
+  to: string;
+  value: string;
+  validAfter: string;
+  validBefore: string;
+  nonce: string;
+  tokenAddress?: string; // For TRC20 tokens like USDT
+}
+
+export interface TronSignature {
+  signature: string; // TRON uses a single hex signature string
 }
 
 export interface EIP3009Payload {

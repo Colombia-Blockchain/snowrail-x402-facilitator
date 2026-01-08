@@ -6,7 +6,9 @@ import { healthRoutes } from './api/routes/health';
 import { supportedRoutes } from './api/routes/supported';
 import { verifyRoutes } from './api/routes/verify';
 import { settleRoutes } from './api/routes/settle';
+import { tronVerifyRoutes, tronSettleRoutes } from './api/routes/tron';
 import { initializeWalletService } from './services/wallet-service';
+import { initializeTronWalletService } from './services/tron-wallet-service';
 import type { ApiResponse } from './types';
 
 dotenv.config();
@@ -44,12 +46,17 @@ server.register(cors, {
 
 // Initialize services
 initializeWalletService(server);
+initializeTronWalletService(server);
 
 // Register routes
+// Cronos routes
 server.register(healthRoutes);
 server.register(supportedRoutes);
 server.register(verifyRoutes);
 server.register(settleRoutes);
+// TRON routes
+server.register(tronVerifyRoutes);
+server.register(tronSettleRoutes);
 
 // Global error handler
 server.setErrorHandler((error, request, reply) => {
@@ -70,17 +77,16 @@ server.setErrorHandler((error, request, reply) => {
   reply.code(error.statusCode || 500).send(response);
 });
 
-const showBanner = (port: number, network: string) => {
+const showBanner = (port: number) => {
   console.log(`
 ╔═══════════════════════════════════════════════════════════╗
 ║                                                           ║
-║   ❄️  SNOWRAIL x402 FACILITATOR                           ║
+║   SNOWRAIL x402 FACILITATOR                               ║
 ║                                                           ║
-║   Network: ${network.padEnd(44)}║
 ║   Port: ${port.toString().padEnd(48)}║
 ║   Protocol: x402 v${process.env.X402_PROTOCOL_VERSION || '1.0'}                                     ║
 ║                                                           ║
-║   Endpoints:                                              ║
+║   Cronos Endpoints:                                       ║
 ║   • GET  /health     - Health status                      ║
 ║   • GET  /version    - Version info                       ║
 ║   • GET  /supported  - Supported schemes                  ║
@@ -88,6 +94,12 @@ const showBanner = (port: number, network: string) => {
 ║   • POST /verify     - Verify payment                     ║
 ║   • GET  /settle     - Settlement schema                  ║
 ║   • POST /settle     - Execute settlement                 ║
+║                                                           ║
+║   TRON Endpoints:                                         ║
+║   • GET  /tron/verify  - TRON verification schema         ║
+║   • POST /tron/verify  - Verify TRON payment              ║
+║   • GET  /tron/settle  - TRON settlement schema           ║
+║   • POST /tron/settle  - Execute TRON settlement          ║
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
   `);
@@ -99,7 +111,7 @@ const start = async () => {
     const host = process.env.HOST || '0.0.0.0';
 
     await server.listen({ port, host });
-    showBanner(port, process.env.CRONOS_NETWORK_NAME || 'Cronos Testnet');
+    showBanner(port);
     server.log.info(`Facilitator running on http://${host}:${port}`);
   } catch (err) {
     server.log.error(err);
